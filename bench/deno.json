@@ -1,0 +1,4 @@
+{
+  "lock": false,
+  "imports": { "@char/justin": "../lib/mod.ts" }
+}
