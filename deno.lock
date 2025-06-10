@@ -1,0 +1,6 @@
+{
+  "version": "5",
+  "remote": {
+    "https://char.lt/esm/pipe.ts": "e40365c4d5032fc28d27712c7421248240d0b78b5a5abcd8d46bff1852d5d615"
+  }
+}
