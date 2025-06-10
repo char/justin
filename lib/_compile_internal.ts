@@ -18,7 +18,7 @@ import { compileUnion, type UnionSchema } from "./schema/union.ts";
 export const irValue: unique symbol = Symbol();
 /// ⇒ variable name of error report function
 export const irError: unique symbol = Symbol();
-/// ⇒ next
+/// ⇒ next schema (in case a compiler wants to wrap it in a block or something)
 export const irNext: unique symbol = Symbol();
 
 export type IREntry = string | typeof irValue | typeof irError | typeof irNext;
