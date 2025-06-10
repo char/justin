@@ -20,7 +20,7 @@ export type ValidationFunction<Schema extends AnySchema> =
     | { value: Infer<Schema>; errors: undefined };
 
 export function compile<Schema extends AnySchema>(schema: Schema): ValidationFunction<Schema> {
-  const ctx: CompileContext = { locals: new LocalVariableAllocator(), path: "" };
+  const ctx: CompileContext = { locals: new LocalVariableAllocator(), path: "", custom: {} };
   const errors = ctx.locals.next();
 
   const source = [`const ${errors} = [];`];
@@ -35,5 +35,12 @@ export function compile<Schema extends AnySchema>(schema: Schema): ValidationFun
   source.push(`if (${errors}.length) return { errors: ${errors} }`);
   source.push(`return { value }`);
 
-  return new Function("value", source.join("\n")) as ValidationFunction<Schema>;
+  const outer = new Function(
+    "$custom",
+    `return (value) => {
+  ${source.join("\n")}
+}`,
+  );
+  const inner = outer(ctx.custom);
+  return inner as ValidationFunction<Schema>;
 }

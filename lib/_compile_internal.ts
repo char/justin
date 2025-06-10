@@ -9,6 +9,7 @@ import {
   type StringSchema,
   type UnknownSchema,
 } from "./schema/basic.ts";
+import { compileCustom, CustomSchema } from "./schema/custom.ts";
 import { compileLiteral, type LiteralSchema } from "./schema/literal.ts";
 import { compileObject, type ObjectSchema } from "./schema/object.ts";
 import { compileOptional, type OptionalSchema } from "./schema/optional.ts";
@@ -43,6 +44,7 @@ export const irEmitError = (ctx: CompileContext, message: string): IREntry[] =>
 export interface CompileContext {
   locals: LocalVariableAllocator;
   path: string;
+  custom: Record<string, unknown>;
 }
 
 export class LocalVariableAllocator {
@@ -75,6 +77,7 @@ export function compileSchema(ctx: CompileContext, schema: AnySchema): IREntry[]
   if (schema.type === "literal") return compileLiteral(ctx, schema as LiteralSchema<unknown>);
   if (schema.type === "optional")
     return compileOptional(ctx, schema as OptionalSchema<AnySchema>);
+  if (schema.type === "custom") return compileCustom(ctx, schema as CustomSchema<unknown>);
 
   throw new Error("unrecognized schema type");
 }
