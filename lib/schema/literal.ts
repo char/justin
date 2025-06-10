@@ -19,12 +19,8 @@ export const compileLiteral: SchemaCompiler<LiteralSchema<unknown>> = (ctx, sche
   concatIR`if (${irValue} !== ${JSON.stringify(schema.value)}) ${irEmitError(ctx, "must match literal value: " + JSON.stringify(schema.value))};
   ${irNext}`;
 
-function makeLiteral<const Literal>(value: Literal): LiteralSchema<Literal> {
-  return { type: "literal", value };
-}
-
-export const literal = /* #__PURE__ */ registerSchemaCompiler(
-  "literal",
-  compileLiteral,
-  makeLiteral,
-);
+export const literal: <const Literal>(value: Literal) => LiteralSchema<Literal> =
+  /* #__PURE__ */ registerSchemaCompiler("literal", compileLiteral, (value) => ({
+    type: "literal",
+    value,
+  }));

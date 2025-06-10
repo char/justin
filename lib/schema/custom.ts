@@ -23,11 +23,15 @@ export const compileCustom: SchemaCompiler<CustomSchema<unknown>> = (ctx, schema
   ${irNext}`;
 };
 
-function makeCustom<T>(
+export const custom: <T>(
   check: (value: unknown) => value is T,
-  message: string = "must match custom check",
-): CustomSchema<T> {
-  return { type: "custom", check, message };
-}
-
-export const custom = registerSchemaCompiler("custom", compileCustom, makeCustom);
+  message?: string,
+) => CustomSchema<T> = /* #__PURE__ */ registerSchemaCompiler(
+  "custom",
+  compileCustom,
+  (check, message) => ({
+    type: "custom",
+    check,
+    message: message ?? "must match custom check",
+  }),
+);

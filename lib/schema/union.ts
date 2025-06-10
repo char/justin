@@ -64,9 +64,10 @@ export const compileUnion: SchemaCompiler<UnionSchema<readonly AnySchema[]>> = (
   ${irNext}`;
 };
 
-function makeUnion<const InSchemas extends readonly AnySchema[]>(
+export const union: <const InSchemas extends readonly AnySchema[]>(
   ...schemas: InSchemas
-): UnionSchema<InSchemas> {
-  return { type: "union", schemas };
-}
-export const union = /* #__PURE__ */ registerSchemaCompiler("union", compileUnion, makeUnion);
+) => UnionSchema<InSchemas> = /* #__PURE__ */ registerSchemaCompiler(
+  "union",
+  compileUnion,
+  (...schemas) => ({ type: "union", schemas }),
+);

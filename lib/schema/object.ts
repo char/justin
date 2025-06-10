@@ -56,7 +56,10 @@ export const compileObject: SchemaCompiler<ObjectSchema<Record<string, AnySchema
   ${irNext}`;
 };
 
-function makeObj<Shape extends Record<string, AnySchema>>(shape: Shape): ObjectSchema<Shape> {
-  return { type: "object", shape };
-}
-export const obj = /* #__PURE__ */ registerSchemaCompiler("object", compileObject, makeObj);
+export const obj: <Shape extends Record<string, AnySchema>>(
+  shape: Shape,
+) => ObjectSchema<Shape> = /* #__PURE__ */ registerSchemaCompiler(
+  "object",
+  compileObject,
+  (shape) => ({ type: "object", shape }),
+);

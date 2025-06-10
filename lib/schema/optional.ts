@@ -20,12 +20,10 @@ export const compileOptional: SchemaCompiler<OptionalSchema<AnySchema>> = (ctx, 
   concatIR`if (${irValue} !== undefined) { ${compileSchema(ctx, schema.schema)} }
 ${irNext}`;
 
-function makeOptional<InSchema extends AnySchema>(schema: InSchema): OptionalSchema<InSchema> {
-  return { type: "optional", schema };
-}
-
-export const optional = /* #__PURE__ */ registerSchemaCompiler(
+export const optional: <InSchema extends AnySchema>(
+  schema: InSchema,
+) => OptionalSchema<InSchema> = /* #__PURE__ */ registerSchemaCompiler(
   "optional",
   compileOptional,
-  makeOptional,
+  (schema) => ({ type: "optional", schema }),
 );
