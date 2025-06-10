@@ -2,10 +2,20 @@
 
 a typescript data validation library utilizing just-in-time function compilation.
 
+## features
+
+- dependency-free
+- small bundle size (pay for what you use, ranges from sub-1kb to 4kb)
+- low-allocation design
+- much faster than validation via interpreting schema objects
+  - according to `bench/speed.ts`, 10×-20× faster than zod v4 mini
+
 ## limitations
 
 - since all checks are inlined, we do not support circular schemas
   - you probably want to use `j.unknown` and reapply the validator function to the member object
+- transformation is not supported since we return the exact same object that was passed in
+- compilation is very slow, so ad-hoc construction of schemata is considered an anti-pattern
 
 ## example
 
