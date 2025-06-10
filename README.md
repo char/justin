@@ -20,6 +20,13 @@ const PersonSchema = j.obj({
   ),
 });
 
+type Person = j.Infer<typeof PersonSchema>;
+/* ⇒ {
+    fullName: string;
+    preferredName: string;
+    i18nInflection?: "masculine" | "feminine" | "neutral" | undefined;
+} */
+
 const validator = j.compile(PersonSchema);
 const { value: person, errors: personErrors } = validator({
   fullName: "Guy Jones",
