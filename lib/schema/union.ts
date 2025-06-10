@@ -4,7 +4,7 @@ import {
   irEmitError,
   irError,
   irNext,
-  registerSchema,
+  registerSchemaCompiler,
   type IREntry,
   type SchemaCompiler,
 } from "../_compile_internal.ts";
@@ -69,4 +69,4 @@ function makeUnion<const InSchemas extends readonly AnySchema[]>(
 ): UnionSchema<InSchemas> {
   return { type: "union", schemas };
 }
-export const union = /* #__PURE__ */ registerSchema("union", compileUnion, makeUnion);
+export const union = /* #__PURE__ */ registerSchemaCompiler("union", compileUnion, makeUnion);

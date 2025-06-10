@@ -3,7 +3,7 @@ import {
   irEmitError,
   irNext,
   irValue,
-  registerSchema,
+  registerSchemaCompiler,
   type SchemaCompiler,
 } from "../_compile_internal.ts";
 import type { BasicSchema } from "../schema.ts";
@@ -14,9 +14,7 @@ export const compileNumber: SchemaCompiler<NumberSchema> = (ctx, _) =>
   ${irNext}`;
 export const number: NumberSchema =
   /* #__PURE__ */
-  registerSchema("number", compileNumber, {
-    type: "number",
-  });
+  registerSchemaCompiler("number", compileNumber, { type: "number" });
 
 export type StringSchema = BasicSchema<string, "string">;
 export const compileString: SchemaCompiler<StringSchema> = (ctx, _) =>
@@ -24,9 +22,7 @@ export const compileString: SchemaCompiler<StringSchema> = (ctx, _) =>
   ${irNext}`;
 export const string: StringSchema =
   /* #__PURE__ */
-  registerSchema("string", compileString, {
-    type: "string",
-  });
+  registerSchemaCompiler("string", compileString, { type: "string" });
 
 export type BooleanSchema = BasicSchema<boolean, "boolean">;
 export const compileBoolean: SchemaCompiler<BooleanSchema> = (ctx, _) =>
@@ -34,10 +30,10 @@ export const compileBoolean: SchemaCompiler<BooleanSchema> = (ctx, _) =>
   ${irNext}`;
 export const boolean: BooleanSchema =
   /* #__PURE__ */
-  registerSchema("boolean", compileBoolean, { type: "boolean" });
+  registerSchemaCompiler("boolean", compileBoolean, { type: "boolean" });
 
 export type UnknownSchema = BasicSchema<unknown, "unknown">;
 export const compileUnknown: SchemaCompiler<UnknownSchema> = (_ctx, _) => [irNext];
 export const unknown: UnknownSchema =
   /* #__PURE__ */
-  registerSchema("unknown", compileUnknown, { type: "unknown" });
+  registerSchemaCompiler("unknown", compileUnknown, { type: "unknown" });

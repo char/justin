@@ -3,7 +3,7 @@ import {
   irEmitError,
   irNext,
   irValue,
-  registerSchema,
+  registerSchemaCompiler,
   type SchemaCompiler,
 } from "../_compile_internal.ts";
 import type { out } from "../_internal.ts";
@@ -23,4 +23,8 @@ function makeLiteral<const Literal>(value: Literal): LiteralSchema<Literal> {
   return { type: "literal", value };
 }
 
-export const literal = /* #__PURE__ */ registerSchema("literal", compileLiteral, makeLiteral);
+export const literal = /* #__PURE__ */ registerSchemaCompiler(
+  "literal",
+  compileLiteral,
+  makeLiteral,
+);

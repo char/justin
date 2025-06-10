@@ -4,7 +4,7 @@ import {
   irEmitError,
   irNext,
   irValue,
-  registerSchema,
+  registerSchemaCompiler,
   type IREntry,
   type SchemaCompiler,
 } from "../_compile_internal.ts";
@@ -59,4 +59,4 @@ export const compileObject: SchemaCompiler<ObjectSchema<Record<string, AnySchema
 function makeObj<Shape extends Record<string, AnySchema>>(shape: Shape): ObjectSchema<Shape> {
   return { type: "object", shape };
 }
-export const obj = /* #__PURE__ */ registerSchema("object", compileObject, makeObj);
+export const obj = /* #__PURE__ */ registerSchemaCompiler("object", compileObject, makeObj);

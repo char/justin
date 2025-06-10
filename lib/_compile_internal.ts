@@ -51,7 +51,11 @@ export class LocalVariableAllocator {
 export type SchemaCompiler<T extends AnySchema> = (ctx: CompileContext, schema: T) => IREntry[];
 
 const compilers = new Map<string, SchemaCompiler<any>>();
-export function registerSchema<T>(type: string, compiler: SchemaCompiler<any>, factory: T): T {
+export function registerSchemaCompiler<T>(
+  type: string,
+  compiler: SchemaCompiler<any>,
+  factory: T,
+): T {
   compilers.set(type, compiler);
   return factory;
 }

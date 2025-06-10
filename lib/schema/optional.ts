@@ -3,7 +3,7 @@ import {
   concatIR,
   irNext,
   irValue,
-  registerSchema,
+  registerSchemaCompiler,
   type SchemaCompiler,
 } from "../_compile_internal.ts";
 import type { out } from "../_internal.ts";
@@ -24,7 +24,7 @@ function makeOptional<InSchema extends AnySchema>(schema: InSchema): OptionalSch
   return { type: "optional", schema };
 }
 
-export const optional = /* #__PURE__ */ registerSchema(
+export const optional = /* #__PURE__ */ registerSchemaCompiler(
   "optional",
   compileOptional,
   makeOptional,
