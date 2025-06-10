@@ -1,5 +1,27 @@
 {
   "version": "5",
+  "specifiers": {
+    "npm:@badrap/valita@*": "0.4.5",
+    "npm:@zod/mini@next": "4.0.0-beta.20250505T195954",
+    "npm:mitata@*": "1.0.34"
+  },
+  "npm": {
+    "@badrap/valita@0.4.5": {
+      "integrity": "sha512-4QwGbuhh/JesHRQj79mO/l37PvJj4l/tlAu7+S1n4h47qwaNpZ0WDvIwUGLYUsdi9uQ5UPpiG9wb1Wm3XUFBUQ=="
+    },
+    "@zod/core@0.11.6": {
+      "integrity": "sha512-03Bv82fFSfjDAvMfdHHdGSS6SOJs0iCcJlWJv1kJHRtoTT02hZpyip/2Lk6oo4l4FtjuwTrsEQTwg/LD8I7dJA=="
+    },
+    "@zod/mini@4.0.0-beta.20250505T195954": {
+      "integrity": "sha512-ioybPtU4w4TqwHvJv0gkAiYNaBkZ/BaGHBpK7viCIRSE8BiiZucVZ8vS0YE04Qy1R120nAnFy1d+tD9ByMO0yw==",
+      "dependencies": [
+        "@zod/core"
+      ]
+    },
+    "mitata@1.0.34": {
+      "integrity": "sha512-Mc3zrtNBKIMeHSCQ0XqRLo1vbdIx1wvFV9c8NJAiyho6AjNfMY8bVhbS12bwciUdd1t4rj8099CH3N3NFahaUA=="
+    }
+  },
   "remote": {
     "https://char.lt/esm/pipe.ts": "e40365c4d5032fc28d27712c7421248240d0b78b5a5abcd8d46bff1852d5d615"
   }

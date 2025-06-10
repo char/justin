@@ -35,7 +35,5 @@ export function compile<Schema extends AnySchema>(schema: Schema): ValidationFun
   source.push(`if (${errors}.length) return { errors: ${errors} }`);
   source.push(`return { value }`);
 
-  console.log(source);
-
   return new Function("value", source.join("\n")) as ValidationFunction<Schema>;
 }
