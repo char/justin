@@ -3,6 +3,7 @@ import {
   concatIR,
   irNext,
   irValue,
+  registerSchema,
   type SchemaCompiler,
 } from "../_compile_internal.ts";
 import type { out } from "../_internal.ts";
@@ -15,12 +16,16 @@ export interface OptionalSchema<InSchema extends AnySchema> {
   readonly [out]?: TBox<Infer<InSchema> | undefined>;
 }
 
-export function optional<InSchema extends AnySchema>(
-  schema: InSchema,
-): OptionalSchema<InSchema> {
-  return { type: "optional", schema };
-}
-
 export const compileOptional: SchemaCompiler<OptionalSchema<AnySchema>> = (ctx, schema) =>
   concatIR`if (${irValue} !== undefined) { ${compileSchema(ctx, schema.schema)} }
 ${irNext}`;
+
+function makeOptional<InSchema extends AnySchema>(schema: InSchema): OptionalSchema<InSchema> {
+  return { type: "optional", schema };
+}
+
+export const optional = /* #__PURE__ */ registerSchema(
+  "optional",
+  compileOptional,
+  makeOptional,
+);

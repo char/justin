@@ -1,19 +1,4 @@
 import type { AnySchema } from "./schema.ts";
-import {
-  compileBoolean,
-  compileNumber,
-  compileString,
-  compileUnknown,
-  type BooleanSchema,
-  type NumberSchema,
-  type StringSchema,
-  type UnknownSchema,
-} from "./schema/basic.ts";
-import { compileCustom, CustomSchema } from "./schema/custom.ts";
-import { compileLiteral, type LiteralSchema } from "./schema/literal.ts";
-import { compileObject, type ObjectSchema } from "./schema/object.ts";
-import { compileOptional, type OptionalSchema } from "./schema/optional.ts";
-import { compileUnion, type UnionSchema } from "./schema/union.ts";
 
 /// ⇒ variable name of value being validated
 export const irValue: unique symbol = Symbol();
@@ -65,8 +50,17 @@ export class LocalVariableAllocator {
 
 export type SchemaCompiler<T extends AnySchema> = (ctx: CompileContext, schema: T) => IREntry[];
 
+const compilers = new Map<string, SchemaCompiler<any>>();
+export function registerSchema<T>(type: string, compiler: SchemaCompiler<any>, factory: T): T {
+  compilers.set(type, compiler);
+  return factory;
+}
+
 export function compileSchema(ctx: CompileContext, schema: AnySchema): IREntry[] {
-  if (schema.type === "string") return compileString(ctx, schema as StringSchema);
+  const compiler = compilers.get(schema.type);
+  if (compiler) return compiler(ctx, schema);
+
+  /* if (schema.type === "string") return compileString(ctx, schema as StringSchema);
   if (schema.type === "number") return compileNumber(ctx, schema as NumberSchema);
   if (schema.type === "boolean") return compileBoolean(ctx, schema as BooleanSchema);
   if (schema.type === "unknown") return compileUnknown(ctx, schema as UnknownSchema);
@@ -77,7 +71,7 @@ export function compileSchema(ctx: CompileContext, schema: AnySchema): IREntry[]
   if (schema.type === "literal") return compileLiteral(ctx, schema as LiteralSchema<unknown>);
   if (schema.type === "optional")
     return compileOptional(ctx, schema as OptionalSchema<AnySchema>);
-  if (schema.type === "custom") return compileCustom(ctx, schema as CustomSchema<unknown>);
+  if (schema.type === "custom") return compileCustom(ctx, schema as CustomSchema<unknown>); */
 
-  throw new Error("unrecognized schema type");
+  throw new Error("unrecognized schema type: " + schema.type);
 }

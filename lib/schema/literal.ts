@@ -3,6 +3,7 @@ import {
   irEmitError,
   irNext,
   irValue,
+  registerSchema,
   type SchemaCompiler,
 } from "../_compile_internal.ts";
 import type { out } from "../_internal.ts";
@@ -14,10 +15,12 @@ export interface LiteralSchema<Literal> {
   readonly [out]?: TBox<Literal>;
 }
 
-export function literal<const Literal>(value: Literal): LiteralSchema<Literal> {
-  return { type: "literal", value };
-}
-
 export const compileLiteral: SchemaCompiler<LiteralSchema<unknown>> = (ctx, schema) =>
   concatIR`if (${irValue} !== ${JSON.stringify(schema.value)}) ${irEmitError(ctx, "must match literal value: " + JSON.stringify(schema.value))};
   ${irNext}`;
+
+function makeLiteral<const Literal>(value: Literal): LiteralSchema<Literal> {
+  return { type: "literal", value };
+}
+
+export const literal = /* #__PURE__ */ registerSchema("literal", compileLiteral, makeLiteral);

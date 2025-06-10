@@ -4,6 +4,7 @@ import {
   irEmitError,
   irNext,
   irValue,
+  registerSchema,
   type IREntry,
   type SchemaCompiler,
 } from "../_compile_internal.ts";
@@ -20,12 +21,6 @@ export interface ObjectSchema<Shape extends Record<string, AnySchema>> {
     { [K in keyof Shape as undefined extends Infer<Shape[K]> ? never : K]:  Infer<Shape[K]> } &
     { [K in keyof Shape as undefined extends Infer<Shape[K]> ? K : never]?: Infer<Shape[K]> }
   >>;
-}
-
-export function obj<Shape extends Record<string, AnySchema>>(
-  shape: Shape,
-): ObjectSchema<Shape> {
-  return { type: "object", shape };
 }
 
 export const compileObject: SchemaCompiler<ObjectSchema<Record<string, AnySchema>>> = (
@@ -60,3 +55,8 @@ export const compileObject: SchemaCompiler<ObjectSchema<Record<string, AnySchema
   }
   ${irNext}`;
 };
+
+function makeObj<Shape extends Record<string, AnySchema>>(shape: Shape): ObjectSchema<Shape> {
+  return { type: "object", shape };
+}
+export const obj = /* #__PURE__ */ registerSchema("object", compileObject, makeObj);

@@ -4,6 +4,7 @@ import {
   irEmitError,
   irError,
   irNext,
+  registerSchema,
   type IREntry,
   type SchemaCompiler,
 } from "../_compile_internal.ts";
@@ -22,12 +23,6 @@ export interface UnionSchema<InSchemas extends readonly AnySchema[]> {
       K extends `${infer N extends number}` ? N : never
     ]: Infer<InSchemas[K]>;
   }>>;
-}
-
-export function union<const InSchemas extends readonly AnySchema[]>(
-  ...schemas: InSchemas
-): UnionSchema<InSchemas> {
-  return { type: "union", schemas };
 }
 
 export const compileUnion: SchemaCompiler<UnionSchema<readonly AnySchema[]>> = (
@@ -68,3 +63,10 @@ export const compileUnion: SchemaCompiler<UnionSchema<readonly AnySchema[]>> = (
   } while (false);
   ${irNext}`;
 };
+
+function makeUnion<const InSchemas extends readonly AnySchema[]>(
+  ...schemas: InSchemas
+): UnionSchema<InSchemas> {
+  return { type: "union", schemas };
+}
+export const union = /* #__PURE__ */ registerSchema("union", compileUnion, makeUnion);
