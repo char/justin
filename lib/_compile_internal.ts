@@ -59,7 +59,7 @@ export class LocalVariableAllocator {
       i = Math.floor(i / 26);
     }
 
-    return "_" + s;
+    return s;
   }
 }
 

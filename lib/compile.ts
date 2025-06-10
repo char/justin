@@ -27,17 +27,17 @@ export function compile<Schema extends AnySchema>(schema: Schema): ValidationFun
   const ir = compileSchema(ctx, schema);
   for (let i = 0; i < ir.length; i++) {
     const entry = ir[i];
-    if (entry === irValue) ir[i] = "value";
+    if (entry === irValue) ir[i] = "$value";
     if (entry === irError) ir[i] = `${errors}.push`;
     if (entry === irNext) ir[i] = "";
   }
   source.push(ir.join(""));
   source.push(`if (${errors}.length) return { errors: ${errors} }`);
-  source.push(`return { value }`);
+  source.push(`return { value: $value }`);
 
   const outer = new Function(
     "$custom",
-    `return (value) => {
+    `return ($value) => {
   ${source.join("\n")}
 }`,
   );
