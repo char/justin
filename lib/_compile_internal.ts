@@ -15,11 +15,11 @@ import { compileOptional, type OptionalSchema } from "./schema/optional.ts";
 import { compileUnion, type UnionSchema } from "./schema/union.ts";
 
 /// ⇒ variable name of value being validated
-export const irValue = Symbol();
+export const irValue: unique symbol = Symbol();
 /// ⇒ variable name of error report function
-export const irError = Symbol();
+export const irError: unique symbol = Symbol();
 /// ⇒ next
-export const irNext = Symbol();
+export const irNext: unique symbol = Symbol();
 
 export type IREntry = string | typeof irValue | typeof irError | typeof irNext;
 export const concatIR = (

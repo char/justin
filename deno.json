@@ -2,6 +2,7 @@
   "name": "@char/justin",
   "version": "0.1.0",
   "exports": "./lib/mod.ts",
+  "license": "Unlicense",
   "lint": {
     "rules": {
       "exclude": ["ban-types", "no-explicit-any"]
