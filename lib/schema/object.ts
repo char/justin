@@ -23,7 +23,7 @@ export interface ObjectSchema<Shape extends Record<string, AnySchema>> {
   >>;
 }
 
-export const compileObject: SchemaCompiler<ObjectSchema<Record<string, AnySchema>>> = (
+const compileObject: SchemaCompiler<ObjectSchema<Record<string, AnySchema>>> = (
   ctx,
   schema,
 ) => {

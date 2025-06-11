@@ -16,7 +16,7 @@ export interface CustomSchema<T> {
   readonly [out]?: TBox<T>;
 }
 
-export const compileCustom: SchemaCompiler<CustomSchema<unknown>> = (ctx, schema) => {
+const compileCustom: SchemaCompiler<CustomSchema<unknown>> = (ctx, schema) => {
   const check = ctx.locals.next();
   ctx.custom[check] = schema.check;
   return concatIR`if (!$custom[${JSON.stringify(check)}](${irValue})) ${irEmitError(ctx, schema.message)};

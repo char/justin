@@ -25,10 +25,7 @@ export interface UnionSchema<InSchemas extends readonly AnySchema[]> {
   }>>;
 }
 
-export const compileUnion: SchemaCompiler<UnionSchema<readonly AnySchema[]>> = (
-  ctx,
-  schema,
-) => {
+const compileUnion: SchemaCompiler<UnionSchema<readonly AnySchema[]>> = (ctx, schema) => {
   const valid = ctx.locals.next();
   const invalidate = ctx.locals.next();
 

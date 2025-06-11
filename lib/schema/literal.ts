@@ -15,7 +15,7 @@ export interface LiteralSchema<Literal> {
   readonly [out]?: TBox<Literal>;
 }
 
-export const compileLiteral: SchemaCompiler<LiteralSchema<unknown>> = (ctx, schema) =>
+const compileLiteral: SchemaCompiler<LiteralSchema<unknown>> = (ctx, schema) =>
   concatIR`if (${irValue} !== ${JSON.stringify(schema.value)}) ${irEmitError(ctx, "must match literal value: " + JSON.stringify(schema.value))};
   ${irNext}`;
 

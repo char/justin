@@ -16,7 +16,7 @@ export interface OptionalSchema<InSchema extends AnySchema> {
   readonly [out]?: TBox<Infer<InSchema> | undefined>;
 }
 
-export const compileOptional: SchemaCompiler<OptionalSchema<AnySchema>> = (ctx, schema) =>
+const compileOptional: SchemaCompiler<OptionalSchema<AnySchema>> = (ctx, schema) =>
   concatIR`if (${irValue} !== undefined) { ${compileSchema(ctx, schema.schema)} }
 ${irNext}`;
 
