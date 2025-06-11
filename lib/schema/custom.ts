@@ -9,10 +9,13 @@ import {
 import type { out } from "../_internal.ts";
 import type { TBox } from "../_util.ts";
 
+/** represents a value gated by a custom check */
 export interface CustomSchema<T> {
   readonly type: "custom";
   readonly check: (value: unknown) => value is T;
   readonly message: string;
+
+  /** @ignore */
   readonly [out]?: TBox<T>;
 }
 
@@ -23,6 +26,13 @@ const compileCustom: SchemaCompiler<CustomSchema<unknown>> = (ctx, schema) => {
   ${irNext}`;
 };
 
+/**
+ * a custom check, gated by a type guard function
+ *
+ * ```typescript
+ * j.custom((v): v is `${string}.com` => typeof v === "string" && v.endsWith(".com"))
+ * ```
+ */
 export const custom: <T>(
   check: (value: unknown) => value is T,
   message?: string,

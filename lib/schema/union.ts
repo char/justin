@@ -14,9 +14,12 @@ import type { AnySchema, Infer } from "../schema.ts";
 
 type Values<T> = Flatten<T[keyof T]>;
 
+/** represents a union type, whose constituent types are defined by InSchemas */
 export interface UnionSchema<InSchemas extends readonly AnySchema[]> {
   readonly type: "union";
   readonly schemas: InSchemas;
+
+  /** @ignore */
   // prettier-ignore
   readonly [out]?: TBox<Values<{
     [K in keyof InSchemas as
@@ -61,6 +64,14 @@ const compileUnion: SchemaCompiler<UnionSchema<readonly AnySchema[]>> = (ctx, sc
   ${irNext}`;
 };
 
+/**
+ * a union value.
+ *
+ * ```typescript
+ * const Schema = j.union(j.string, j.number);
+ * type T = j.infer<typeof Schema>; // => string | number
+ * ```
+ */
 export const union: <const InSchemas extends readonly AnySchema[]>(
   ...schemas: InSchemas
 ) => UnionSchema<InSchemas> = /* #__PURE__ */ registerSchemaCompiler(

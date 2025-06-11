@@ -11,9 +11,12 @@ import type { out } from "../_internal.ts";
 import type { TBox } from "../_util.ts";
 import type { AnySchema, Infer } from "../schema.ts";
 
+/** represents an array whose contents are represented by Items */
 export interface ArraySchema<Items extends AnySchema> {
   readonly type: "array";
   readonly items: Items;
+
+  /** @ignore */
   readonly [out]?: TBox<Infer<Items>[]>;
 }
 
@@ -33,6 +36,14 @@ else {
   ${irNext}`;
 };
 
+/**
+ * an array value.
+ *
+ * ```typescript
+ * const Schema = j.array(j.string);
+ * type T = j.Infer<typeof Schema>; // => string[]
+ * ```
+ */
 export const array: <Items extends AnySchema>(items: Items) => ArraySchema<Items> =
   /* #__PURE__ */
   registerSchemaCompiler("array", compileArray, (items) => ({ type: "array", items }));
