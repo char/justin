@@ -2,6 +2,8 @@
 
 a typescript data validation library utilizing just-in-time function compilation.
 
+[available on jsr.io](http://jsr.io/@char/justin).
+
 ## features
 
 - dependency-free
