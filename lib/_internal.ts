@@ -1,1 +1,1 @@
-export declare const out: " $ justin infer";
+export declare const out: unique symbol;
