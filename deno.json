@@ -1,6 +1,6 @@
 {
   "name": "@char/justin",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "exports": "./lib/mod.ts",
   "license": "Unlicense",
   "lint": {
