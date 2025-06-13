@@ -1,7 +1,6 @@
 import {
   compileSchema,
   irError,
-  irNext,
   irValue,
   LocalVariableAllocator,
   type CompileContext,
@@ -29,7 +28,6 @@ export function compile<Schema extends AnySchema>(schema: Schema): ValidationFun
     const entry = ir[i];
     if (entry === irValue) ir[i] = "$value";
     if (entry === irError) ir[i] = `${errors}.push`;
-    if (entry === irNext) ir[i] = "";
   }
   source.push(ir.join(""));
   source.push(`if (${errors}.length) return { errors: ${errors} }`);

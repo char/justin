@@ -2,7 +2,6 @@ import {
   compileSchema,
   concatIR,
   irEmitError,
-  irNext,
   irValue,
   registerSchemaCompiler,
   type IREntry,
@@ -31,22 +30,14 @@ const compileObject: SchemaCompiler<ObjectSchema<Record<string, AnySchema>>> = (
 ) => {
   const obj = ctx.locals.next();
 
-  let subschemaValidation: IREntry[] = [irNext];
+  const subschemaValidation: IREntry[] = [];
   for (const [key, subschema] of Object.entries(schema.shape)) {
-    const step: IREntry[] = [];
-    for (let i = 0; i < subschemaValidation.length; i++) {
-      const entry = subschemaValidation[i];
-      if (entry === irNext) {
-        step.push(
-          ...compileSchema({ ...ctx, path: ctx.path + "." + key }, subschema).map((it) =>
-            it === irValue ? `${obj}[${JSON.stringify(key)}]` : it,
-          ),
-        );
-      } else {
-        step.push(entry);
-      }
-    }
-    subschemaValidation = step;
+    subschemaValidation.push("\n");
+    subschemaValidation.push(
+      ...compileSchema({ ...ctx, path: ctx.path + "." + key }, subschema).map((it) =>
+        it === irValue ? `${obj}[${JSON.stringify(key)}]` : it,
+      ),
+    );
   }
 
   return concatIR`const ${obj} = ${irValue}
@@ -54,8 +45,7 @@ const compileObject: SchemaCompiler<ObjectSchema<Record<string, AnySchema>>> = (
     ${irEmitError({ ...ctx, path: ctx.path + "." }, "must be object")};
   } else {
     ${subschemaValidation}
-  }
-  ${irNext}`;
+  }`;
 };
 
 /**

@@ -3,7 +3,6 @@ import {
   concatIR,
   irEmitError,
   irError,
-  irNext,
   irValue,
   registerSchemaCompiler,
   type IREntry,
@@ -38,44 +37,24 @@ const compileDiscriminatedUnion: SchemaCompiler<
   const suberrors = ctx.locals.next();
   const suberror = ctx.locals.next();
 
-  let subschemaValidation: IREntry[] = [irNext];
+  const subschemaValidation: IREntry[] = [];
   for (const subschema of schema.schemas) {
     const discriminant = subschema.shape[schema.discriminant] as LiteralSchema<any>;
     if (discriminant.type !== "literal") {
       throw new Error("union discriminant must be a LiteralSchema");
     }
 
-    const step = [];
-    for (let i = 0; i < subschemaValidation.length; i++) {
-      const entry = subschemaValidation[i];
-      if (entry === irNext) {
-        // step.push(
-        //   ...concatIR`${valid} = true;
-        //   ${compileSchema(ctx, subschema).flatMap((it) =>
-        //     it === irError
-        //       ? [invalidate]
-        //       : it === irNext
-        //         ? concatIR`if (${valid}) break; ${irNext}`
-        //         : [it],
-        //   )}`,
-        // );
-
-        step.push(
-          ...concatIR`case ${JSON.stringify(discriminant.value)}: {
-          const ${suberrors} = [];
-          ${compileSchema(ctx, subschema).flatMap((it) => (it === irNext ? [] : it === irError ? [suberrors, ".push"] : it))}
-          for (const ${suberror} of ${suberrors}) {
-            ${irError}(${suberror});
-          }
-          break;
+    subschemaValidation.push(
+      ...concatIR`
+      case ${JSON.stringify(discriminant.value)}: {
+        const ${suberrors} = [];
+        ${compileSchema(ctx, subschema).flatMap((it) => (it === irError ? [suberrors, ".push"] : it))}
+        for (const ${suberror} of ${suberrors}) {
+          ${irError}(${suberror});
         }
-        ${irNext}`,
-        );
-      } else {
-        step.push(entry);
-      }
-    }
-    subschemaValidation = step;
+        break;
+      }`,
+    );
   }
 
   return concatIR`switch (${irValue}[${JSON.stringify(schema.discriminant)}]) {
@@ -84,8 +63,7 @@ const compileDiscriminatedUnion: SchemaCompiler<
       ${irEmitError({ ...ctx, path: ctx.path + "." }, "unknown union variant")};
       break;
     }
-  }
-  ${irNext}`;
+  }`;
 };
 
 /**

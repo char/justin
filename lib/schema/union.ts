@@ -3,7 +3,6 @@ import {
   concatIR,
   irEmitError,
   irError,
-  irNext,
   registerSchemaCompiler,
   type IREntry,
   type SchemaCompiler,
@@ -32,27 +31,14 @@ const compileUnion: SchemaCompiler<UnionSchema<readonly AnySchema[]>> = (ctx, sc
   const valid = ctx.locals.next();
   const invalidate = ctx.locals.next();
 
-  let subschemaValidation: IREntry[] = [irNext];
+  const subschemaValidation: IREntry[] = [];
   for (const subschema of schema.schemas) {
-    const step = [];
-    for (let i = 0; i < subschemaValidation.length; i++) {
-      const entry = subschemaValidation[i];
-      if (entry === irNext) {
-        step.push(
-          ...concatIR`${valid} = true;
-          ${compileSchema(ctx, subschema).flatMap((it) =>
-            it === irError
-              ? [invalidate]
-              : it === irNext
-                ? concatIR`if (${valid}) break; ${irNext}`
-                : [it],
-          )}`,
-        );
-      } else {
-        step.push(entry);
-      }
-    }
-    subschemaValidation = step;
+    subschemaValidation.push(
+      ...concatIR`
+      ${valid} = true;
+      ${compileSchema(ctx, subschema).flatMap((it) => (it === irError ? [invalidate] : it))}
+      if (${valid}) break;`,
+    );
   }
 
   return concatIR`do {
@@ -60,8 +46,7 @@ const compileUnion: SchemaCompiler<UnionSchema<readonly AnySchema[]>> = (ctx, sc
     const ${invalidate} = _err => (${valid} = false);
     ${subschemaValidation}
     ${irEmitError(ctx, "invalid value")};
-  } while (false);
-  ${irNext}`;
+  } while (false);`;
 };
 
 /**

@@ -2,7 +2,6 @@ import {
   compileSchema,
   concatIR,
   irEmitError,
-  irNext,
   irValue,
   registerSchemaCompiler,
   type SchemaCompiler,
@@ -32,8 +31,7 @@ else {
       schema.items,
     ).map((it) => (it === irValue ? item : it))}
   }
-}
-  ${irNext}`;
+}`;
 };
 
 /**

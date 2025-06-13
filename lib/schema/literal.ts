@@ -1,7 +1,6 @@
 import {
   concatIR,
   irEmitError,
-  irNext,
   irValue,
   registerSchemaCompiler,
   type SchemaCompiler,
@@ -19,8 +18,7 @@ export interface LiteralSchema<Literal> {
 }
 
 const compileLiteral: SchemaCompiler<LiteralSchema<unknown>> = (ctx, schema) =>
-  concatIR`if (${irValue} !== ${JSON.stringify(schema.value)}) ${irEmitError(ctx, "must match literal value: " + JSON.stringify(schema.value))};
-  ${irNext}`;
+  concatIR`if (${irValue} !== ${JSON.stringify(schema.value)}) ${irEmitError(ctx, "must match literal value: " + JSON.stringify(schema.value))};`;
 
 /**
  * a literal value.

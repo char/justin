@@ -1,7 +1,6 @@
 import {
   compileSchema,
   concatIR,
-  irNext,
   irValue,
   registerSchemaCompiler,
   type SchemaCompiler,
@@ -20,8 +19,7 @@ export interface OptionalSchema<InSchema extends AnySchema> {
 }
 
 const compileOptional: SchemaCompiler<OptionalSchema<AnySchema>> = (ctx, schema) =>
-  concatIR`if (${irValue} !== undefined) { ${compileSchema(ctx, schema.schema)} }
-${irNext}`;
+  concatIR`if (${irValue} !== undefined) { ${compileSchema(ctx, schema.schema)} }`;
 
 /**
  * an optional value.

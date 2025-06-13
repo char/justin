@@ -4,10 +4,8 @@ import type { AnySchema } from "./schema.ts";
 export const irValue: unique symbol = Symbol();
 /// ⇒ variable name of error report function
 export const irError: unique symbol = Symbol();
-/// ⇒ next schema (in case a compiler wants to wrap it in a block or something)
-export const irNext: unique symbol = Symbol();
 
-export type IREntry = string | typeof irValue | typeof irError | typeof irNext;
+export type IREntry = string | typeof irValue | typeof irError;
 export const concatIR = (
   strings: TemplateStringsArray,
   ...values: (IREntry | IREntry[])[]
