@@ -4,7 +4,6 @@ import {
   irEmitError,
   irError,
   registerSchemaCompiler,
-  type IREntry,
   type SchemaCompiler,
 } from "../_compile_internal.ts";
 import type { out } from "../_internal.ts";
@@ -31,20 +30,15 @@ const compileUnion: SchemaCompiler<UnionSchema<readonly AnySchema[]>> = (ctx, sc
   const valid = ctx.locals.next();
   const invalidate = ctx.locals.next();
 
-  const subschemaValidation: IREntry[] = [];
-  for (const subschema of schema.schemas) {
-    subschemaValidation.push(
-      ...concatIR`
-      ${valid} = true;
-      ${compileSchema(ctx, subschema).flatMap((it) => (it === irError ? [invalidate] : it))}
-      if (${valid}) break;`,
-    );
-  }
-
   return concatIR`do {
     let ${valid};
     const ${invalidate} = _err => (${valid} = false);
-    ${subschemaValidation}
+    ${schema.schemas.flatMap(
+      (subschema) => concatIR`
+      ${valid} = true;
+      ${compileSchema(ctx, subschema).flatMap((it) => (it === irError ? [invalidate] : it))}
+      if (${valid}) break;`,
+    )}
     ${irEmitError(ctx, "invalid value")};
   } while (false);`;
 };

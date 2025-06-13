@@ -5,7 +5,6 @@ import {
   irError,
   irValue,
   registerSchemaCompiler,
-  type IREntry,
   type SchemaCompiler,
 } from "../_compile_internal.ts";
 import type { out } from "../_internal.ts";
@@ -37,15 +36,14 @@ const compileDiscriminatedUnion: SchemaCompiler<
   const suberrors = ctx.locals.next();
   const suberror = ctx.locals.next();
 
-  const subschemaValidation: IREntry[] = [];
-  for (const subschema of schema.schemas) {
-    const discriminant = subschema.shape[schema.discriminant] as LiteralSchema<any>;
-    if (discriminant.type !== "literal") {
-      throw new Error("union discriminant must be a LiteralSchema");
-    }
+  return concatIR`switch (${irValue}[${JSON.stringify(schema.discriminant)}]) {
+    ${schema.schemas.flatMap((subschema) => {
+      const discriminant = subschema.shape[schema.discriminant] as LiteralSchema<any>;
+      if (discriminant.type !== "literal") {
+        throw new Error("union discriminant must be a LiteralSchema");
+      }
 
-    subschemaValidation.push(
-      ...concatIR`
+      return concatIR`
       case ${JSON.stringify(discriminant.value)}: {
         const ${suberrors} = [];
         ${compileSchema(ctx, subschema).flatMap((it) => (it === irError ? [suberrors, ".push"] : it))}
@@ -53,12 +51,8 @@ const compileDiscriminatedUnion: SchemaCompiler<
           ${irError}(${suberror});
         }
         break;
-      }`,
-    );
-  }
-
-  return concatIR`switch (${irValue}[${JSON.stringify(schema.discriminant)}]) {
-    ${subschemaValidation}
+      }`;
+    })}
     default: {
       ${irEmitError({ ...ctx, path: ctx.path + "." }, "unknown union variant")};
       break;

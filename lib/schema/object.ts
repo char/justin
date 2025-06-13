@@ -4,7 +4,6 @@ import {
   irEmitError,
   irValue,
   registerSchemaCompiler,
-  type IREntry,
   type SchemaCompiler,
 } from "../_compile_internal.ts";
 import type { out } from "../_internal.ts";
@@ -30,21 +29,16 @@ const compileObject: SchemaCompiler<ObjectSchema<Record<string, AnySchema>>> = (
 ) => {
   const obj = ctx.locals.next();
 
-  const subschemaValidation: IREntry[] = [];
-  for (const [key, subschema] of Object.entries(schema.shape)) {
-    subschemaValidation.push("\n");
-    subschemaValidation.push(
-      ...compileSchema({ ...ctx, path: ctx.path + "." + key }, subschema).map((it) =>
-        it === irValue ? `${obj}[${JSON.stringify(key)}]` : it,
-      ),
-    );
-  }
-
   return concatIR`const ${obj} = ${irValue}
   if (typeof ${obj} !== "object" || ${obj} === null) {
     ${irEmitError({ ...ctx, path: ctx.path + "." }, "must be object")};
   } else {
-    ${subschemaValidation}
+    ${Object.entries(schema.shape).flatMap(([key, subschema]) => [
+      "\n",
+      ...compileSchema({ ...ctx, path: ctx.path + "." + key }, subschema).map((it) =>
+        it === irValue ? `${obj}[${JSON.stringify(key)}]` : it,
+      ),
+    ])}
   }`;
 };
 
