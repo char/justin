@@ -68,18 +68,5 @@ export function compileSchema(ctx: CompileContext, schema: AnySchema): IREntry[]
   const compiler = compilers.get(schema.type);
   if (compiler) return compiler(ctx, schema);
 
-  /* if (schema.type === "string") return compileString(ctx, schema as StringSchema);
-  if (schema.type === "number") return compileNumber(ctx, schema as NumberSchema);
-  if (schema.type === "boolean") return compileBoolean(ctx, schema as BooleanSchema);
-  if (schema.type === "unknown") return compileUnknown(ctx, schema as UnknownSchema);
-  if (schema.type === "union")
-    return compileUnion(ctx, schema as UnionSchema<readonly AnySchema[]>);
-  if (schema.type === "object")
-    return compileObject(ctx, schema as ObjectSchema<Record<string, AnySchema>>);
-  if (schema.type === "literal") return compileLiteral(ctx, schema as LiteralSchema<unknown>);
-  if (schema.type === "optional")
-    return compileOptional(ctx, schema as OptionalSchema<AnySchema>);
-  if (schema.type === "custom") return compileCustom(ctx, schema as CustomSchema<unknown>); */
-
   throw new Error("unrecognized schema type: " + schema.type);
 }
