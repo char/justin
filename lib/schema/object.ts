@@ -4,10 +4,11 @@ import {
   irEmitError,
   irValue,
   registerSchemaCompiler,
+  type Flatten,
+  type out,
   type SchemaCompiler,
-} from "../_compile_internal.ts";
-import type { out } from "../_internal.ts";
-import type { Flatten, TBox } from "../_util.ts";
+  type TBox,
+} from "../_internal.ts";
 import type { AnySchema, Infer } from "../schema.ts";
 
 /** represents an object of some known shape */

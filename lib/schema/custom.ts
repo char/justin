@@ -3,10 +3,10 @@ import {
   irEmitError,
   irValue,
   registerSchemaCompiler,
+  type out,
   type SchemaCompiler,
-} from "../_compile_internal.ts";
-import type { out } from "../_internal.ts";
-import type { TBox } from "../_util.ts";
+  type TBox,
+} from "../_internal.ts";
 
 /** represents a value gated by a custom check */
 export interface CustomSchema<T> {

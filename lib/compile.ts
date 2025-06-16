@@ -4,7 +4,7 @@ import {
   irValue,
   LocalVariableAllocator,
   type CompileContext,
-} from "./_compile_internal.ts";
+} from "./_internal.ts";
 import type { AnySchema, Infer } from "./schema.ts";
 
 export interface ValidationError {

@@ -4,10 +4,10 @@ import {
   irEmitError,
   irValue,
   registerSchemaCompiler,
+  type out,
   type SchemaCompiler,
-} from "../_compile_internal.ts";
-import type { out } from "../_internal.ts";
-import type { TBox } from "../_util.ts";
+  type TBox,
+} from "../_internal.ts";
 import type { AnySchema, Infer } from "../schema.ts";
 
 /** represents an array whose contents are represented by Items */
