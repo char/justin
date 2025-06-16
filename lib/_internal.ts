@@ -5,6 +5,7 @@ export type Flatten<T> = I<{ [K in keyof T]: T[K] }>;
 export type TBox<T> = { v: T };
 
 export declare const out: unique symbol;
+export const compileCacheSymbol: unique symbol = Symbol();
 
 /// ⇒ variable name of value being validated
 export const irValue: unique symbol = Symbol();

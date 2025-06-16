@@ -1,4 +1,5 @@
 import {
+  compileCacheSymbol,
   compileSchema,
   irError,
   irValue,
@@ -19,6 +20,9 @@ export type ValidationFunction<Schema extends AnySchema> =
     | { value: Infer<Schema>; errors: undefined };
 
 export function compile<Schema extends AnySchema>(schema: Schema): ValidationFunction<Schema> {
+  const cachedFunction = Reflect.get(schema, compileCacheSymbol);
+  if (cachedFunction) return cachedFunction as ValidationFunction<Schema>;
+
   const ctx: CompileContext = { locals: new LocalVariableAllocator(), path: "", custom: {} };
   const errors = ctx.locals.next();
 
@@ -40,5 +44,7 @@ export function compile<Schema extends AnySchema>(schema: Schema): ValidationFun
 }`,
   );
   const inner = outer(ctx.custom);
+
+  Reflect.defineProperty(schema, compileCacheSymbol, { value: inner });
   return inner as ValidationFunction<Schema>;
 }
