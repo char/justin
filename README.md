@@ -1,6 +1,6 @@
 # justin
 
-a typescript data validation library utilizing just-in-time function compilation.
+a runtime type info library with just-in-time compilation for type validation and deep equality.
 
 [available on jsr.io](http://jsr.io/@char/justin).
 
@@ -8,9 +8,8 @@ a typescript data validation library utilizing just-in-time function compilation
 
 - dependency-free
 - small bundle size (pay for what you use, ranges from sub-1kb to 4kb)
-- low-allocation design
+- low-allocation design of generated functions
 - much faster than validation via interpreting schema objects
-  - according to `bench/speed.ts`, 10×-20× faster than zod v4 mini
 
 ## limitations
 
@@ -39,7 +38,7 @@ type Person = j.Infer<typeof PersonSchema>;
     i18nInflection?: "masculine" | "feminine" | "neutral" | undefined;
 } */
 
-const validator = j.compile(PersonSchema);
+const validator = j.validation.compile(PersonSchema);
 const { value: person, errors: personErrors } = validator({
   fullName: "Guy Jones",
   preferredName: "guy",

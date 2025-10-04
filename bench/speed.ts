@@ -10,7 +10,7 @@ const Person = j.obj({
     j.union(j.literal("masculine"), j.literal("feminine"), j.literal("neutral")),
   ),
 });
-const personValidator = j.compile(Person);
+const personValidator = j.validation.compile(Person);
 
 bench("justin", () => {
   const { value: person } = personValidator({
