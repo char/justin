@@ -6,24 +6,15 @@ import {
   type ConcreteSchema,
   renderTemplateString,
   type TemplateStringPiece,
+  irTemplate,
 } from "./_util.ts";
 
 const value: unique symbol = Symbol();
 const error: unique symbol = Symbol();
 const userData: unique symbol = Symbol();
 type IRNode = string | typeof value | typeof error | typeof userData;
-
-const ir = (strings: TemplateStringsArray, ...values: (IRNode | IRNode[])[]): IRNode[] => {
-  const nodes: IRNode[] = [];
-  for (let i = 0; i < strings.length; i++) {
-    if (strings[i]) nodes.push(strings[i]);
-    const v = values[i];
-    if (v !== undefined) {
-      if (Array.isArray(v)) nodes.push(...v);
-      else nodes.push(v);
-    }
-  }
-  return nodes;
+const ir = (strings: TemplateStringsArray, ...values: (IRNode | IRNode[])[]) => {
+  return irTemplate<IRNode>(strings, ...values);
 };
 
 type CompileContext = { locals: [number]; path: TemplateStringPiece<IRNode>[]; userData: Record<string, unknown> };
@@ -74,9 +65,10 @@ const compilers: CompilerMap = {
       let ${item};
       ${schema.schemas.flatMap((subschema, index) => {
         const subcompiler = findCompiler(subschema.type);
+        const subctx = { ...ctx, path: [...ctx.path, "[", literal(index), "]"] };
         return ir`
           ${item} = ${value}[${literal(index)}];
-          ${subcompiler({ ...ctx, path: [...ctx.path, "[", literal(index), "]"] }, subschema).map(it => (it === value ? item : it))}
+          ${subcompiler(subctx, subschema).map(it => (it === value ? item : it))}
         `;
       })}
     }`;

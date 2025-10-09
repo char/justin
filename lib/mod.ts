@@ -202,4 +202,4 @@ export const custom = <T>(
 });
 
 export * as validation from "./validation.ts";
-// export * as equality from "./equality.ts";
+export * as equality from "./equality.ts";

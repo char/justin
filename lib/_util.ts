@@ -76,3 +76,19 @@ export const renderTemplateString = <IR>(pieces: TemplateStringPiece<IR>[]): (IR
 
   return expr;
 };
+
+export const irTemplate = <IR>(
+  strings: TemplateStringsArray,
+  ...values: ((IR | string) | (IR | string)[])[]
+): (IR | string)[] => {
+  const nodes: (IR | string)[] = [];
+  for (let i = 0; i < strings.length; i++) {
+    if (strings[i]) nodes.push(strings[i]);
+    const v = values[i];
+    if (v !== undefined) {
+      if (Array.isArray(v)) nodes.push(...v);
+      else nodes.push(v);
+    }
+  }
+  return nodes;
+};
