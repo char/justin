@@ -13,13 +13,6 @@ type CompileContext = { locals: [number]; userData: Record<string, unknown> };
 
 // macros
 const nextLocal = (ctx: CompileContext) => counterToString(++ctx.locals[0]);
-const substituteValues =
-  (valA: IRNode, valB: IRNode) =>
-  (node: IRNode): IRNode => {
-    if (node === valueA) return valA;
-    if (node === valueB) return valB;
-    return node;
-  };
 const primitiveEq = ir`if (${valueA} !== ${valueB}) return false;`;
 
 type SchemaCompiler<T extends AnySchema = AnySchema> = (ctx: CompileContext, schema: T) => IRNode[];
@@ -39,31 +32,23 @@ const compilers: CompilerMap = {
     const subcompiler = findCompiler(schema.subschema.type);
 
     const idx = nextLocal(ctx);
-    const itemA = nextLocal(ctx);
-    const itemB = nextLocal(ctx);
 
     // prettier-ignore
     return ir`
       if (${valueA}.length !== ${valueB}.length) return false;
       for (let ${idx} = 0; ${idx} < ${valueA}.length; idx++) {
-        const ${itemA} = ${valueA}[${idx}];
-        const ${itemB} = ${valueB}[${idx}];
         ${subcompiler(ctx, schema.subschema)
-          .flatMap(substituteValues(itemA, itemB))}
+          .flatMap(it => (it === valueA || it === valueB) ? ir`${it}[${idx}]` : it)}
       }
     `;
   },
   tuple: (ctx, schema) => {
-    const itemA = nextLocal(ctx);
-    const itemB = nextLocal(ctx);
     return ir`
       ${schema.schemas.flatMap((subschema, index) => {
         const subcompiler = findCompiler(subschema.type);
-        return ir`{
-          const ${itemA} = ${valueA}[${literal(index)}];
-          const ${itemB} = ${valueB}[${literal(index)}];
-          ${subcompiler(ctx, subschema).map(substituteValues(itemA, itemB))}
-        }`;
+        return subcompiler(ctx, subschema).flatMap(it =>
+          it === valueA || it === valueB ? ir`${it}[${literal(index)}]` : it,
+        );
       })}
     `;
   },
@@ -71,20 +56,20 @@ const compilers: CompilerMap = {
     const subcompiler = findCompiler(schema.subschema.type);
     return ir`
       if ((${valueA} === undefined) != (${valueB} === undefined)) return false;
-      ${subcompiler(ctx, schema.subschema)}
+      else if (${valueA} !== undefined) {
+        ${subcompiler(ctx, schema.subschema)}
+      }
     `;
   },
   object: (ctx, schema) => {
-    const childA = nextLocal(ctx);
-    const childB = nextLocal(ctx);
     return ir`
       ${Object.entries(schema.shape).flatMap(([key, subschema]) => {
         const subcompiler = findCompiler(subschema.type);
-        return ir`{
-          const ${childA} = ${valueA}${traversal(key)};
-          const ${childB} = ${valueB}${traversal(key)};
-          ${subcompiler(ctx, subschema).map(substituteValues(childA, childB))}
-        }`;
+        const out = subcompiler(ctx, subschema).flatMap(it =>
+          it === valueA || it === valueB ? ir`${it}${traversal(key)}` : it,
+        );
+        out.unshift("\n");
+        return out;
       })}
     `;
   },
@@ -110,8 +95,8 @@ export function compile<Schema extends AnySchema>(schema: Schema): EqualityFunct
   const ir = compiler(ctx, schema);
   for (let i = 0; i < ir.length; i++) {
     if (ir[i] === valueA) ir[i] = "a";
-    if (ir[i] === valueB) ir[i] = "b";
-    if (ir[i] === userData) ir[i] = "userData";
+    else if (ir[i] === valueB) ir[i] = "b";
+    else if (ir[i] === userData) ir[i] = "userData";
   }
 
   const source: string[] = [];

@@ -53,7 +53,7 @@ const compilers: CompilerMap = {
             path: [...ctx.path, "[", { interpolate: [index] }, "]"],
           },
           schema.subschema,
-        ).map(it => (it === value ? item : it))};
+        ).flatMap(it => (it === value ? item : it))};
         ${index}++;
       }
     }`;
@@ -66,10 +66,7 @@ const compilers: CompilerMap = {
       ${schema.schemas.flatMap((subschema, index) => {
         const subcompiler = findCompiler(subschema.type);
         const subctx = { ...ctx, path: [...ctx.path, "[", literal(index), "]"] };
-        return ir`
-          ${item} = ${value}[${literal(index)}];
-          ${subcompiler(subctx, subschema).map(it => (it === value ? item : it))}
-        `;
+        return subcompiler(subctx, subschema).flatMap(it => (it === value ? ir`${value}[${literal(index)}]` : it));
       })}
     }`;
   },
@@ -91,17 +88,16 @@ const compilers: CompilerMap = {
     } while (false);`;
   },
   object: (ctx, schema) => {
-    const obj = nextLocal(ctx);
-    return ir`const ${obj} = ${value};
-      if (typeof ${obj} !== "object" || ${obj} === null) {
+    return ir`
+      if (typeof ${value} !== "object" || ${value} === null) {
         ${emitError(ctx, "must be object")};
       } else {
         ${Object.entries(schema.shape).flatMap(([key, subschema]) => {
           const subcompiler = findCompiler(subschema.type);
           return [
             "\n",
-            ...subcompiler({ ...ctx, path: [...ctx.path, ".", key] }, subschema).map(it =>
-              it === value ? `${obj}${traversal(key)}` : it,
+            ...subcompiler({ ...ctx, path: [...ctx.path, ".", key] }, subschema).flatMap(it =>
+              it === value ? ir`${value}${traversal(key)}` : it,
             ),
           ];
         })}
@@ -161,8 +157,8 @@ export function compile<Schema extends AnySchema>(schema: Schema): SchemaValidat
   const ir = compiler(ctx, schema);
   for (let i = 0; i < ir.length; i++) {
     if (ir[i] === value) ir[i] = "value";
-    if (ir[i] === error) ir[i] = `${errors}.push`;
-    if (ir[i] === userData) ir[i] = "userData";
+    else if (ir[i] === error) ir[i] = `${errors}.push`;
+    else if (ir[i] === userData) ir[i] = "userData";
   }
   source.push(ir.join(""));
   source.push(`if (${errors}.length) return { errors: ${errors} }`);
