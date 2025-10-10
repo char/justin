@@ -152,7 +152,7 @@ export interface DiscriminatedUnionSchema<Subschemas extends readonly ObjectSche
  */
 export const discriminatedUnion = <const Subschemas extends readonly ObjectSchema[]>(
   discriminant: string,
-  ...schemas: Subschemas
+  schemas: Subschemas,
 ) => ({ type: "d-union", discriminant, schemas });
 
 /** represents a value which may be undefined (or not provided at all, e.g. in an object),

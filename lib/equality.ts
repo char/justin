@@ -1,5 +1,5 @@
-import { ConcreteSchema, counterToString, irTemplate, literal, TemplateStringPiece, traversal } from "./_util.ts";
-import type { AnySchema, Infer } from "./mod.ts";
+import { type ConcreteSchema, counterToString, irTemplate, literal, traversal } from "./_util.ts";
+import type { AnySchema, Infer, LiteralSchema } from "./mod.ts";
 
 const valueA: unique symbol = Symbol();
 const valueB: unique symbol = Symbol();
@@ -76,8 +76,23 @@ const compilers: CompilerMap = {
   union: (_c, _s) => {
     throw new Error("generating equality functions for bare unions is not yet supported");
   },
-  "d-union": (_c, _s) => {
-    throw new Error("not yet implemented");
+  "d-union": (ctx, schema) => {
+    return ir`
+      if (${valueA}${traversal(schema.discriminant)} !== ${valueB}${traversal(schema.discriminant)}) return false;
+      switch (${valueA}${traversal(schema.discriminant)}) {
+      ${schema.schemas.flatMap(subschema => {
+        const key = subschema.shape[schema.discriminant] as LiteralSchema<any>;
+        if (key.type !== "literal") throw new Error("union discriminant must be a LiteralSchema");
+        const subcompiler = findCompiler(subschema.type);
+        return ir`
+        case ${literal(key.value)}: {
+          ${subcompiler(ctx, subschema)}
+          break;
+        }
+        `;
+      })}
+      }
+    `;
   },
   custom: (ctx, schema) => {
     if (!schema.equality) throw new Error("unresolvable custom schema");
